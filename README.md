@@ -116,6 +116,228 @@ Some examples are listed below. You can find more in the directory of each model
 
 ![crnn_demo](./models/text_recognition_crnn/examples/CRNNCTC.gif)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Running Yunet Face Detection on Jetson
+
+## This guide will walk you through the steps to run the Yunet face detection demo on Jetson using Python 3.7.
+
+### Prerequisites
+- Git Large File Storage (LFS)
+- Onnx runtime
+
+#### Step 1: Installing Git LFS
+To install Git LFS, follow these steps:
+
+- Download Git LFS from https://git-lfs.com/.
+- Run the following commands in the terminal:
+
+```sh
+curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
+
+sudo apt-get install git-lfs=3.3.0
+```
+
+#### Step 2: Cloning the opencv_zoo Repository
+To clone the opencv_zoo repository, follow these steps:
+
+- Open terminal and run the following command:
+```sh
+git clone https://github.com/opencv/opencv_zoo
+
+```
+- Navigate to the cloned repository using the following command:
+```sh 
+cd opencv_zoo
+```
+
+- Install Git LFS for the repository using the following command:
+```sh 
+git lfs install	
+
+```
+- Pull the LFS data for the repository using the following command:
+``` sh 
+git lfs pull
+```
+
+
+#### Step 3: Installing Onnx runtime
+To install Onnx runtime, follow these steps:
+
+- Go to the link https://elinux.org/Jetson_Zoo#ONNX_Runtime
+- Download the .whl file that is compatible with your Python version.
+- Install the .whl file using pip:
+``` sh 
+pip install <filename>.whl
+
+```
+
+
+#### Step 4: Running the Demo
+To run the demo, follow these steps:
+
+- Navigate to the face detection demo directory using the following command:
+``` sh 
+cd opencv_zoo/models/face_detection_yunet
+
+```
+- Run the demo using the following command:
+``` sh 
+python3.7 demo.py	
+
+```
+
+The demo will start running and display the results of the face detection in the output window.
+
+### Note: If you encounter any issues, make sure to check that all the necessary dependencies are installed and that you have the correct version of Python installed on your system.
+
+# YuNet
+
+YuNet is a light-weight, fast and accurate face detection model, which achieves 0.834(AP_easy), 0.824(AP_medium), 0.708(AP_hard) on the WIDER Face validation set.
+
+Notes:
+
+- Model source: [here](https://github.com/ShiqiYu/libfacedetection.train/blob/a61a428929148171b488f024b5d6774f93cdbc13/tasks/task1/onnx/yunet.onnx).
+- This model can detect **faces of pixels between around 10x10 to 300x300** due to the training scheme.
+- For details on training this model, please visit https://github.com/ShiqiYu/libfacedetection.train.
+- This ONNX model has fixed input shape, but OpenCV DNN infers on the exact shape of input image. See https://github.com/opencv/opencv_zoo/issues/44 for more information.
+
+Results of accuracy evaluation with [tools/eval](../../tools/eval).
+
+| Models      | Easy AP | Medium AP | Hard AP |
+| ----------- | ------- | --------- | ------- |
+| YuNet       | 0.8498  | 0.8384    | 0.7357  |
+| YuNet quant | 0.7751  | 0.8145    | 0.7312  |
+
+\*: 'quant' stands for 'quantized'.
+
+
+
+# Progressive Teacher (Facial Expression Recognition)
+
+Progressive Teacher: [Boosting Facial Expression Recognition by A Semi-Supervised Progressive Teacher](https://scholar.google.com/citations?view_op=view_citation&hl=zh-CN&user=OCwcfAwAAAAJ&citation_for_view=OCwcfAwAAAAJ:u5HHmVD_uO8C)
+
+Note:
+- Progressive Teacher is contributed by [Jing Jiang](https://scholar.google.com/citations?user=OCwcfAwAAAAJ&hl=zh-CN).
+-  [MobileFaceNet](https://link.springer.com/chapter/10.1007/978-3-319-97909-0_46) is used as the backbone and the model is able to classify seven basic facial expressions (angry, disgust, fearful, happy, neutral, sad, surprised).
+- [facial_expression_recognition_mobilefacenet_2022july.onnx](https://github.com/opencv/opencv_zoo/raw/master/models/facial_expression_recognition/facial_expression_recognition_mobilefacenet_2022july.onnx) is implemented thanks to [Chengrui Wang](https://github.com/crywang).
+
+Results of accuracy evaluation on [RAF-DB](http://whdeng.cn/RAF/model1.html).
+
+| Models      | Accuracy | 
+|-------------|----------|
+| Progressive Teacher       | 88.27%  |
+
+
+## Demo
+
+***NOTE***: This demo uses [../face_detection_yunet](../face_detection_yunet) as face detector, which supports 5-landmark detection for now (2021sep).
+
+Run the following command to try the demo:
+```shell
+# recognize the facial expression on images
+python demo.py --input /path/to/image
+```
+
+### Example outputs
+
+Note: Zoom in to to see the recognized facial expression in the top-left corner of each face boxes.
+
+![fer demo](./examples/selfie.jpg)
+
+## License
+
+All files in this directory are licensed under [Apache 2.0 License](./LICENSE).
+
+## Reference
+
+- https://ieeexplore.ieee.org/abstract/document/9629313
+
+
+
+
+
+
+# SFace
+
+SFace: Sigmoid-Constrained Hypersphere Loss for Robust Face Recognition
+
+Note:
+
+- SFace is contributed by [Yaoyao Zhong](https://github.com/zhongyy).
+- Model files encode MobileFaceNet instances trained on the SFace loss function, see the [SFace paper](https://arxiv.org/abs/2205.12010) for reference.
+- ONNX file conversions from [original code base](https://github.com/zhongyy/SFace) thanks to [Chengrui Wang](https://github.com/crywang).
+- (As of Sep 2021) Supporting 5-landmark warping for now, see below for details.
+
+Results of accuracy evaluation with [tools/eval](../../tools/eval).
+
+| Models      | Accuracy |
+| ----------- | -------- |
+| SFace       | 0.9940   |
+| SFace quant | 0.9932   |
+
+\*: 'quant' stands for 'quantized'.
+
+## License
+
+All files in this directory are licensed under [Apache 2.0 License](./LICENSE).
+
+## Reference
+
+- https://ieeexplore.ieee.org/document/9318547
+- https://github.com/zhongyy/SFace
+
+
+
+
+
+
+
+
 ## License
 
 OpenCV Zoo is licensed under the [Apache 2.0 license](./LICENSE). Please refer to licenses of different models.
